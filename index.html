@@ -1,0 +1,1862 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Agent 코드 생성 방법론</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Malgun Gothic', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #ffffff;
+        }
+
+        .section {
+            min-height: 100vh;
+            padding: 60px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 300;
+            color: #1a365d;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            font-weight: 400;
+            color: #1a365d;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        h3 {
+            font-size: 1.8rem;
+            font-weight: 500;
+            color: #2d3748;
+            margin-bottom: 1.5rem;
+        }
+
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: #4a5568;
+        }
+
+        .section-intro {
+            background-color: #f8f9fa;
+        }
+
+        .section-toc {
+            background-color: #ffffff;
+        }
+
+        .section-quiz {
+            background-color: #f1f5f9;
+        }
+
+        .section-comparison {
+            background-color: #ffffff;
+        }
+
+        .section-lago {
+            background-color: #f8f9fa;
+        }
+
+        .section-demo-even {
+            background-color: #ffffff;
+        }
+
+        .section-demo {
+            background-color: #f8f9fa;
+        }
+
+        .section-futures {
+            background-color: #ffffff;
+        }
+
+        /* 미래 시스템 아키텍처 스타일 */
+        .future-architecture {
+            margin-top: 2rem;
+            padding: 2.5rem;
+            background-color: #ffffff;
+            border: 1px solid #e5e7eb;
+        }
+
+        .architecture-diagram {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .data-sources {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 0.8rem;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .data-source {
+            background-color: #f8fafc;
+            border: 1px solid #cbd5e1;
+            padding: 0.8rem 0.5rem;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #334155;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .data-source:hover {
+            background-color: #1e293b;
+            color: #ffffff;
+            border-color: #1e293b;
+        }
+
+        .adapter-layer {
+            background-color: #64748b;
+            color: #ffffff;
+            padding: 1rem 2rem;
+            text-align: center;
+            font-size: 0.95rem;
+            font-weight: 500;
+            width: 500px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .central-mcp {
+            background-color: #1a365d;
+            color: #ffffff;
+            padding: 1.5rem;
+            text-align: center;
+            width: 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .central-mcp-title {
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .processing-layer {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.8rem;
+            width: 100%;
+        }
+
+        .processing-component {
+            background-color: #ffffff;
+            border: 1px solid #cbd5e1;
+            padding: 0.8rem 0.5rem;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #334155;
+            height: 45px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .processing-component:hover {
+            background-color: #f1f5f9;
+            color: #1e293b;
+            border-color: #94a3b8;
+        }
+
+        .rag-output {
+            background-color: #0f172a;
+            color: #ffffff;
+            padding: 1.2rem 2rem;
+            text-align: center;
+            font-size: 1.05rem;
+            font-weight: 600;
+            width: 500px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .architecture-arrow {
+            text-align: center;
+            font-size: 2.5rem;
+            color: #475569;
+            margin: 0.8rem 0;
+            font-weight: 900;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            line-height: 1;
+        }
+
+        /* 코드 생성 외 활용 방법 스타일 */
+        .section-applications {
+            background-color: #ffffff;
+        }
+
+        .applications-gallery {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .application-item {
+            position: relative;
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .application-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border-color: #cbd5e1;
+        }
+
+        .application-image {
+            width: 100%;
+            height: 0;
+            padding-bottom: 170%; /* 1:1.7 비율 (1.7 * 100 = 170%) */
+            background-color: #e2e8f0;
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 340" fill="%23cbd5e1"><rect width="200" height="340"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="Arial" font-size="16" fill="%236b7280">이미지 영역 (1:1.7)</text></svg>');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .application-image img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .application-title {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.4) 50%, transparent 100%);
+            padding: 1rem;
+            color: #ffffff;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        .application-description {
+            padding: 1.5rem;
+            background-color: #ffffff;
+        }
+
+        .application-description h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1a365d;
+            margin-bottom: 0.8rem;
+        }
+
+        .application-description p {
+            font-size: 0.9rem;
+            color: #4a5568;
+            line-height: 1.5;
+            margin: 0;
+            text-align: left;
+        }
+
+        /* 마치며 섹션 스타일 */
+        .section-closing {
+            background-color: #f8fafc;
+        }
+
+        .closing-content {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 3rem;
+            margin-top: 3rem;
+            align-items: start;
+        }
+
+        .closing-image-container {
+            position: relative;
+        }
+
+        .closing-image {
+            width: 100%;
+            height: 0;
+            padding-bottom: 160%; /* 적당한 크기로 조정 */
+            background-color: #e2e8f0;
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 168" fill="%23cbd5e1"><rect width="120" height="168"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="Arial" font-size="14" fill="%236b7280">이미지 영역</text></svg>');
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            position: relative;
+            border: 1px solid #e2e8f0;
+        }
+
+        .closing-image img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .closing-text {
+            background-color: #ffffff;
+            padding: 1.8rem;
+            border: 1px solid #e2e8f0;
+            border-left: 4px solid #1a365d;
+        }
+
+        .closing-text h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #1a365d;
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        .closing-text p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #374151;
+            margin-bottom: 1.2rem;
+            text-align: left;
+        }
+
+        .closing-text ul {
+            margin: 1.2rem 0;
+            padding-left: 1.5rem;
+        }
+
+        .closing-text li {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Q&A 섹션 스타일 */
+        .section-qna {
+            background-color: #ffffff;
+        }
+
+        /* 목차 스타일 */
+        .toc-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .toc-item {
+            padding: 1rem;
+            background-color: #ffffff;
+            border: 2px solid #e2e8f0;
+            border-radius: 0;
+            text-align: left;
+            font-size: 1.1rem;
+            color: #2d3748;
+        }
+
+        /* 퀴즈 스타일 */
+        .quiz-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            margin-top: 3rem;
+        }
+
+        .quiz-item {
+            text-align: center;
+        }
+
+        .quiz-image {
+            width: 100%;
+            max-width: 400px;
+            height: 300px;
+            object-fit: cover;
+            border: 2px solid #e2e8f0;
+            margin-bottom: 1.5rem;
+        }
+
+        .quiz-button {
+            background-color: #1a365d;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 0;
+            transition: background-color 0.3s;
+        }
+
+        .quiz-button:hover {
+            background-color: #2c5282;
+        }
+
+        .quiz-answer {
+            display: none;
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: #e2e8f0;
+            color: #2d3748;
+            font-size: 0.95rem;
+            text-align: left;
+        }
+
+        /* 비교 테이블 스타일 */
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .comparison-card {
+            background-color: #ffffff;
+            border: 2px solid #e2e8f0;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .comparison-card h3 {
+            color: #1a365d;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .comparison-command {
+            background-color: #f7fafc;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: #2d3748;
+            border-left: 4px solid #1a365d;
+        }
+
+        .pros-cons {
+            text-align: left;
+            margin-top: 1.5rem;
+        }
+
+        .pros-cons h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: #2d3748;
+        }
+
+        .pros-cons ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .pros-cons li {
+            padding: 0.25rem 0;
+            font-size: 0.95rem;
+        }
+
+        .pros li {
+            font-weight: 700;
+            color: #170e78;
+        }
+
+        .pros li:before {
+            content: "+ ";
+            font-weight: bold;
+        }
+
+        .cons li {
+            color: #888888;
+        }
+
+        .cons li:before {
+            content: "- ";
+            font-weight: bold;
+        }
+
+        /* Lago MCP 소개 스타일 */
+        .lago-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .lago-section {
+            background-color: #ffffff;
+            border: 2px solid #e2e8f0;
+            padding: 2rem;
+        }
+
+        .lago-section h3 {
+            color: #1a365d;
+            margin-bottom: 1rem;
+            text-align: center;
+            font-size: 1.3rem;
+        }
+
+        .lago-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .lago-section li {
+            padding: 0.4rem 0;
+            font-size: 0.9rem;
+            color: #4a5568;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .lago-section li:last-child {
+            border-bottom: none;
+        }
+
+        .section-pipeline {
+            background-color: #ffffff;
+        }
+
+        .pipeline-container {
+            margin-top: 2rem;
+            padding: 2.5rem;
+            background-color: #ffffff;
+            border: 1px solid #e5e7eb;
+        }
+
+        .pipeline-steps {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .pipeline-arrow {
+            font-size: 1.8rem;
+            color: #64748b;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+        }
+
+        .pipeline-step {
+            background-color: #ffffff;
+            border: 2px solid #e5e7eb;
+            padding: 1.8rem 1.5rem;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #374151;
+            height: 110px;
+            width: 190px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            position: relative;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .pipeline-step:hover {
+            background-color: #f9fafb;
+            color: #111827;
+            border-color: #374151;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .pipeline-step.start {
+            background-color: #1f2937;
+            color: #ffffff;
+            border-color: #1f2937;
+            font-weight: 600;
+        }
+
+        .pipeline-step.start:hover {
+            background-color: #111827;
+            border-color: #111827;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .pipeline-step.server {
+            background-color: #e53e3e;
+            color: #ffffff;
+            border-color: #e53e3e;
+            font-weight: 500;
+        }
+
+        .pipeline-step.server:hover {
+            background-color: #c53030;
+            border-color: #c53030;
+        }
+
+        .pipeline-step.search {
+            background-color: #38a169;
+            color: #ffffff;
+            border-color: #38a169;
+            font-weight: 600;
+        }
+
+        .pipeline-step.search:hover {
+            background-color: #2f855a;
+            border-color: #2f855a;
+        }
+
+        /* 요청 처리 파이프라인 스타일 */
+        .pipeline-request-flow {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .request-start {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .pipeline-arrow.vertical {
+            font-size: 1.8rem;
+            color: #64748b;
+            font-weight: bold;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .request-branches {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        .request-branch {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+        }
+
+        .request-branch .pipeline-step {
+            width: 234px;
+            min-height: 104px;
+        }
+
+        .request-branch .pipeline-arrow {
+            font-size: 1.5rem;
+        }
+
+        /* 채널별 화살표 스타일 */
+        .pipeline-connector {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 3rem;
+            margin: 0 auto 0 auto;
+            max-width: 900px;
+        }
+
+        .channel-arrow {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .channel-arrow-line {
+            width: 4px;
+            height: 60px;
+            background: linear-gradient(180deg, #6b7280 0%, #374151 100%);
+            position: relative;
+        }
+
+        .channel-arrow-line::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: -6px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 12px solid #374151;
+        }
+
+        .channel-arrow-line::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -2px;
+            width: 8px;
+            height: 8px;
+            background: #374151;
+        }
+     
+        /* 채널 섹션 스타일 */
+        .channels-section {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 3rem;
+            margin: 3rem auto 1.5rem auto;
+            max-width: 900px;
+        }
+
+        .channel {
+            background-color: #ffffff;
+            border: 2px solid #e5e7eb;
+            border-radius: 0;
+            padding: 2rem 2rem;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            min-height: 180px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .channel:hover {
+            transform: translateY(-4px);
+            border-color: #1e293b;
+        }
+
+        .web-channel {
+            border-color: #c7ccd5;
+        }
+
+        .web-channel::before {
+            background: linear-gradient(90deg, #374151 0%, #6b7280 100%);
+        }
+
+        .mcp-channel {
+            border-color: #c7ccd5;
+        }
+
+        .mcp-channel::before {
+            background: linear-gradient(90deg, #1e293b 0%, #0f172a 100%);
+        }
+
+        .channel-icon {
+            font-size: 3.5rem;
+            margin-bottom: 1.2rem;
+            filter: grayscale(20%);
+        }
+
+        .channel-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 1rem;
+            letter-spacing: -0.025em;
+        }
+
+        .channel-desc {
+            font-size: 0.9rem;
+            color: #6b7280;
+            line-height: 1.7;
+            font-weight: 500;
+        }
+
+        /* 사용자 요청 섹션 */
+        .user-request-section {
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        .flow-arrows {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 2.5rem 0;
+            gap: 3rem;
+        }
+
+        .down-arrow {
+            width: 2px;
+            height: 60px;
+            background: linear-gradient(180deg, #6b7280 0%, #313e54 100%);
+            position: relative;
+            margin: 0 2rem;
+        }
+        .down-arrow::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: -4px;
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 10px solid #374151;
+        }
+        .down-arrow::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -2px;
+            width: 6px;
+            height: 6px;
+            background: #6b7280;
+            border-radius: 50%;
+        }
+
+
+        .user-request-box {
+            display: flex;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        /* 반응형 - 새로운 채널 구조 */
+        @media (max-width: 768px) {
+            .channels-section {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .channel {
+                padding: 1.5rem;
+            }
+
+            .channel-icon {
+                font-size: 2.5rem;
+            }
+
+            .split-arrow-down {
+                border-left: 15px solid transparent;
+                border-right: 15px solid transparent;
+                border-top: 20px solid #1a365d;
+            }
+
+            .split-arrow-down::after {
+                top: -18px;
+                left: -12px;
+                border-left: 12px solid transparent;
+                border-right: 12px solid transparent;
+                border-top: 16px solid #ffffff;
+            }
+
+            .pipeline-step {
+                height: 91px;
+                padding: 1.3rem 1.04rem;
+                font-size: 0.85rem;
+                min-width: 234px;
+            }
+        }
+
+
+        /* Section 6 스타일 */
+        .section-demo .container {
+            max-width: 1200px;
+        }
+
+        .demo-container {
+            margin-top: 0rem;
+            background-color: #ffffff;
+            border: 2px solid #e2e8f0;
+            padding: 0.8rem 1.5rem;
+        }
+
+        .demo-workflow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+        }
+
+        .demo-step {
+            text-align: center;
+            max-width: 150px;
+        }
+
+        .demo-step h4 {
+            font-size: 1rem;
+            color: #1a365d;
+            margin-bottom: 0.3rem;
+        }
+
+        .demo-step p {
+            font-size: 0.8rem;
+            margin: 0;
+        }
+
+        .demo-arrow {
+            font-size: 1.5rem;
+            color: #718096;
+            margin: 0 0.5rem;
+        }
+
+        .demo-input-area {
+            background-color: #f7fafc;
+            border: 2px solid #e2e8f0;
+            padding: 1rem;
+            margin: 0.5rem 0;
+        }
+
+        .demo-input-area h4 {
+            font-size: 0.9rem;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+        }
+
+        .demo-input {
+            width: 100%;
+            min-height: 40px;
+            padding: 0.8rem;
+            border: 1px solid #e2e8f0;
+            font-family: 'Segoe UI', 'Malgun Gothic', sans-serif;
+            font-size: 0.85rem;
+            background-color: #ffffff;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .demo-input:hover {
+            background-color: #f7fafc;
+        }
+
+        .copy-feedback {
+            position: absolute;
+            top: -30px;
+            right: 10px;
+            background-color: #1a365d;
+            color: white;
+            padding: 5px 10px;
+            font-size: 0.8rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .copy-feedback.show {
+            opacity: 1;
+        }
+
+        .demo-result-area {
+            background-color: #f7fafc;
+            border: 2px solid #e2e8f0;
+            padding: 1rem;
+            margin: 0.7rem 0;
+        }
+
+        .demo-result-area h4 {
+            font-size: 0.9rem;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+        }
+
+        .demo-image-placeholder {
+            width: 100%;
+            height: auto;
+            background-color: #ffffff;
+            border: 2px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #718096;
+            font-size: 0.9rem;
+            overflow: hidden;
+        }
+
+        .demo-image-placeholder img {
+            margin: 1rem 0 0 0;
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+            border: none;
+            max-height: 400px;
+        }
+
+        /* 사이드 내비게이션 스타일 */
+        .navigation {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-width: 300px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            padding: 8px 12px;
+            transition: all 0.3s ease;
+            background-color: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(226, 232, 240, 0.5);
+        }
+
+        .nav-item:hover {
+            background-color: rgba(248, 250, 252, 0.95);
+            border-color: rgba(148, 163, 184, 0.8);
+        }
+
+        .nav-item.active {
+            background-color: rgba(26, 54, 93, 0.1);
+            border-color: rgba(26, 54, 93, 0.3);
+        }
+
+        .nav-dot {
+            width: 10px;
+            height: 10px;
+            background-color: #cbd5e1;
+            border: 2px solid #1a365d;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item:hover .nav-dot {
+            background-color: #64748b;
+            transform: scale(1.1);
+        }
+
+        .nav-item.active .nav-dot {
+            background-color: #1a365d;
+            transform: scale(1.2);
+        }
+
+        .nav-text {
+            font-size: 0.85rem;
+            color: #64748b;
+            font-weight: 400;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .nav-item:hover .nav-text {
+            color: #334155;
+        }
+
+        .nav-item.active .nav-text {
+            color: #1a365d;
+            font-weight: 600;
+        }
+
+        /* 반응형 디자인 */
+        @media (max-width: 768px) {
+            .navigation {
+                right: 10px;
+                max-width: 200px;
+                gap: 6px;
+            }
+
+            .nav-item {
+                padding: 6px 8px;
+            }
+
+            .nav-dot {
+                width: 8px;
+                height: 8px;
+            }
+
+            .nav-text {
+                font-size: 0.75rem;
+            }
+            
+            .section {
+                padding: 40px 20px;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            h2 {
+                font-size: 2rem;
+            }
+
+            .quiz-container,
+            .comparison-grid,
+            .lago-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            .toc-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .pipeline-steps {
+                flex-direction: column;
+                gap: 0.8rem;
+            }
+
+            .pipeline-arrow {
+                transform: rotate(90deg);
+                font-size: 1.5rem;
+            }
+
+            .pipeline-step {
+                height: 91px;
+                padding: 1.3rem 1.04rem;
+                font-size: 0.85rem;
+                min-width: 234px;
+            }
+
+            .demo-workflow {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .demo-arrow {
+                transform: rotate(90deg);
+            }
+
+            .data-sources {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.8rem;
+            }
+
+            .processing-layer {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .adapter-layer, .central-mcp, .rag-output {
+                max-width: 100%;
+                height: 50px;
+                font-size: 0.9rem;
+            }
+
+            .applications-gallery {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .application-description {
+                padding: 1rem;
+            }
+
+            .application-title {
+                font-size: 1rem;
+                padding: 0.8rem;
+            }
+
+            .closing-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .closing-text {
+                padding: 1.5rem;
+            }
+
+            .closing-text h3 {
+                font-size: 1.2rem;
+            }
+
+            .closing-text p {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 사이드 내비게이션 -->
+    <nav class="navigation">
+        <div class="nav-item active" data-section="0">
+            <span class="nav-dot"></span>
+            <span class="nav-text">들어가며</span>
+        </div>
+        <div class="nav-item" data-section="1">
+            <span class="nav-dot"></span>
+            <span class="nav-text">목차</span>
+        </div>
+        <div class="nav-item" data-section="2">
+            <span class="nav-dot"></span>
+            <span class="nav-text">퀴즈</span>
+        </div>
+        <div class="nav-item" data-section="3">
+            <span class="nav-dot"></span>
+            <span class="nav-text">AI Agent 코드 생성 방법</span>
+        </div>
+        <div class="nav-item" data-section="4">
+            <span class="nav-dot"></span>
+            <span class="nav-text">문서 관리 MCP 소개</span>
+        </div>
+        <div class="nav-item" data-section="5">
+            <span class="nav-dot"></span>
+            <span class="nav-text">문서 관리 MCP 구성</span>
+        </div>
+        <div class="nav-item" data-section="6">
+            <span class="nav-dot"></span>
+            <span class="nav-text">백엔드 코드 생성 시연1</span>
+        </div>
+        <div class="nav-item" data-section="7">
+            <span class="nav-dot"></span>
+            <span class="nav-text">백엔드 코드 생성 시연2</span>
+        </div>
+        <div class="nav-item" data-section="8">
+            <span class="nav-dot"></span>
+            <span class="nav-text">프론트엔드 코드 생성 시연</span>
+        </div>
+        <div class="nav-item" data-section="9">
+            <span class="nav-dot"></span>
+            <span class="nav-text">next 문서 관리 시스템</span>
+        </div>
+        <div class="nav-item" data-section="10">
+            <span class="nav-dot"></span>
+            <span class="nav-text">코드 생성 외 활용 방법</span>
+        </div>
+        <div class="nav-item" data-section="11">
+            <span class="nav-dot"></span>
+            <span class="nav-text">마치며</span>
+        </div>
+        <div class="nav-item" data-section="12">
+            <span class="nav-dot"></span>
+            <span class="nav-text">Q&A</span>
+        </div>
+    </nav>
+
+    <!-- Section 1: 들어가며 -->
+    <section class="section section-intro">
+        <div class="container">
+            <h1>들어가며</h1>
+            <p>발표에서는 프로젝트/개발 생산성을 높이기 위해 진행했던 경험을 소개합니다.</p>
+            <p>시도했던 것과 지금 하고 있는 것, 앞으로 기대하는 것을 담아서 발표하겠습니다.</p>
+        </div>
+    </section>
+
+    <!-- Section 2: 목차 -->
+    <section class="section section-toc">
+        <div class="container">
+            <h1>목차</h1>
+            <div class="toc-grid">
+                <div class="toc-item">1. 들어가며</div>
+                <div class="toc-item">2. 목차</div>
+                <div class="toc-item">3. 퀴즈</div>
+                <div class="toc-item">4. AI Agent에게 코드 생성을 맡기는 방법</div>
+                <div class="toc-item">5. 문서 관리 MCP 소개</div>
+                <div class="toc-item">6. 문서처리 파이프라인</div>
+                <div class="toc-item">7. 코드 생성 시연1 - 백엔드 표준 코드 생성</div>
+                <div class="toc-item">8. 코드 생성 시연2 - 프론트엔드 표준 코드 생성(w/Figma)</div>
+                <div class="toc-item">9. 코드 생성 시연3 - 백엔드 SSO 코드 생성</div>
+                <div class="toc-item">10. next 문서 관리 시스템</div>
+                <div class="toc-item">11. 코드 생성 외 활용 방법</div>
+                <div class="toc-item">12. 마치며</div>
+                <div class="toc-item">13. 간단한 Q&A</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 3: 퀴즈 -->
+    <section class="section section-quiz">
+        <div class="container">
+            <h1>퀴즈</h1>
+            <div class="quiz-container">
+                <div class="quiz-item">
+                    <img src="image/Luddite.png" alt="러다이트 운동" class="quiz-image">
+                    <button class="quiz-button" onclick="toggleAnswer('luddite')">정답 확인</button>
+                    <div id="luddite" class="quiz-answer">
+                        <strong>정답:</strong> 러다이트 운동<br>
+                        방직기계 도입에 따라 노동자들이 일자리를 지키기 위한 반기계 운동
+                    </div>
+                </div>
+                <div class="quiz-item">
+                    <img src="image/hidden_figure.png" alt="히든 피겨스" class="quiz-image">
+                    <button class="quiz-button" onclick="toggleAnswer('hidden')">정답 확인</button>
+                    <div id="hidden" class="quiz-answer">
+                        <strong>정답:</strong> 영화 - 히든피겨스<br>
+                        나사에서 로켓/비행기의 경로, 궤적을 계산하던 흑인 여성들이 프로그래밍을 배워 더 가치있는 일을 하게 된다는 이야기
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 4: AI Agent에게 코드 생성을 맡기는 방법 -->
+    <section class="section section-comparison">
+        <div class="container">
+            <h1>AI Agent에게 코드 생성을 맡기는 방법</h1>
+            <div class="comparison-grid">
+                <!-- 샘플코드 가이드 -->
+                <div class="comparison-card">
+                    <h3>샘플코드를 AI에게 가이드</h3>
+                    <div class="comparison-command">
+                        "example.org.sample 패키지의 SampleApi.java를 참고해서 TutorApi.java를 작성해줘"
+                    </div>
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h4>장점</h4>
+                            <ul>
+                                <li>별도 설정 없음 (단순함)</li>
+                                <li>가장 근접한 코드 작성</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h4>단점</h4>
+                            <ul>
+                                <li>문서 작성 포맷 한계</li>
+                                <li>샘플 코드 유지 필요</li>
+                                <li>여러 케이스의 샘플 코드</li>
+                                <li>샘플 파일 종류/항목 기억</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Confluence MCP -->
+                <div class="comparison-card">
+                    <h3>Confluence MCP</h3>
+                    <div class="comparison-command">
+                        "https://confluence.hmg-corp.io/pages/viewpage.action?pageId=1286890412 를 참고해서 TutorApi.java를 작성해줘"
+                    </div>
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h4>장점</h4>
+                            <ul>
+                                <li>공유 가능한 형태</li>
+                                <li>문서 작성 한계 없음</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h4>단점</h4>
+                            <ul>
+                                <li>문서 종류/항목 기억</li>
+                                <li>검색이 어려움 (cql..)</li>
+                                <li>연결 시 레이턴시</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lago MCP -->
+                <div class="comparison-card">
+                    <h3>Lago MCP</h3>
+                    <div class="comparison-command">
+                        "lago MCP로 코드 표준 문서 중 API 레이어를 확인하고, TutorApi.java를 작성해줘"
+                    </div>
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <h4>장점</h4>
+                            <ul>
+                                <li>공유가 가능한 형태</li>
+                                <li>원하는 경로의 파일 관리</li>
+                                <li>문서 작성 한계 없음</li>
+                                <li>file 경로 사용 시 레이턴시 거의 없음</li>
+                                <li>검색이 용이함 (BM25)</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <h4>단점</h4>
+                            <ul>
+                                <li>대량 문서를 다루기 어려움</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 5: 문서 관리 MCP 소개 -->
+    <section class="section section-lago">
+        <div class="container">
+            <h1>문서 관리 MCP 소개 (Lago MCP)</h1>
+            <img src="image/Lago_logo-Photoroom.png" alt="Lago MCP 로고" style="display: block; margin: 0 auto 1.5rem auto; max-width: 350px; height: auto;">
+            <p><b>해달:라고(haedal:lago)</b> : Model Context Protocol(MCP) 기반의 문서 검색 및 관리 시스템</p>
+            <div class="lago-grid">
+                <div class="lago-section">
+                    <h3>프로젝트 요소</h3>
+                    <ul>
+                        <li><b>1. MCP 서버</b>: Claude와 같은 AI 어시스턴트가 사내 문서에 직접 접근할 수 있는 표준 프로토콜</li>
+                        <li><b>2. BM25 기반 검색</b>: 키워드 매칭과 의미 기반 검색을 통한 정확한 문서 검색</li>
+                        <li><b>3. Docsify 웹 서버</b>: 브라우저에서도 접근 가능한 문서 포털 제공</li>
+                        <li><b>4. 동적 문서 경로</b>: 중앙집중형 문서 조회 뿐만 아닌, 개인 폴더, URL을 통한 경로 지정을 통한 문서 검색</li>
+                        <li><b>5. llms.txt</b>: llm과 인간이 모두 읽을 수 있고, 정규식처리나 파서를 통한 처리가 편리한 형태의 규약</li>
+                        <li><b>6. markdown</b>: 간단한 문법으로 텍스트를 작성하여 HTML로 변환할 수 있는 경량 마크업 언어</li>
+                    </ul>
+                </div>
+
+                <div class="lago-section">
+                    <h3>해결하고 싶은 문제</h3>
+                    <ul>
+                        <li><b>1. 반복적인 업무 대응</b>: 같은 질문에 대해 담당자가 반복적으로 답변</li>
+                        <li><b>2. 분산된 업무 매뉴얼</b>: 여러 시스템에 흩어져 있는 문서들로 인한 정보 접근성 저하</li>
+                        <li><b>3. 비효율적인 온보딩</b>: 신입/경력 사원이 필요한 정보를 찾기 위해 소요되는 시간</li>
+                        <li><b>4. 담당자 찾기의 어려움</b>: "누가 이걸 담당하지?" 형태의 반복적인 문의</li>
+                    </ul>
+                </div>
+
+                <div class="lago-section">
+                    <h3>Lago Mcp 활용</h3>
+                    <ul>
+                        <li><b>1. AI 기반 자동 응답</b>: 반복적인 질문을 AI가 대신 처리</li>
+                        <li><b>2. 통합 문서 검색</b>: 팀/프로젝트 문서를 하나의 인터페이스에서 검색</li>
+                        <li><b>3. 즉시 접근 가능한 정보</b>: AI Agent 채팅창에서 바로 업무 정보 조회</li>
+                        <li><b>4. 담당자 정보 자동 제공</b>: 시스템별 담당자 정보를 문서와 함께 제공</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 6: 문서처리 파이프라인 -->
+    <section class="section section-pipeline">
+        <div class="container">
+            <h1>문서 관리 MCP 구성도</h1>
+            
+            <!-- 두 개의 정보 제공 채널 -->
+            <div class="channels-section">
+                <div class="channel web-channel">
+                    <div class="channel-title">🌐 웹 인터페이스 채널</div>
+                    <div class="channel-desc">
+                        # HTTP 서버 시작<br/>
+                        # Docsify 페이지<br/>
+                        # 브라우저 문서 열람
+                    </div>
+                </div>
+                
+                <div class="channel mcp-channel">
+                    <div class="channel-title">🤖 MCP 에이전트 채널</div>
+                    <div class="channel-desc">
+                        # MCP 연결 대기<br/>
+                        # 키워드 검색 API<br/>
+                        # AI 에이전트 응답
+                    </div>
+                </div>
+            </div>
+
+            <!-- 채널별 화살표 -->
+            <div class="pipeline-connector">
+                <div class="channel-arrow">
+                    <div class="channel-arrow-line"></div>
+                </div>
+                <div class="channel-arrow">
+                    <div class="channel-arrow-line"></div>
+                </div>
+            </div>
+
+            <!-- 문서 준비 파이프라인 -->
+            <div class="pipeline-container">
+                <h3 style="text-align: center; color: #1a365d; margin-bottom: 2rem; font-size: 1.5rem; font-weight: 700; ">📋 문서 준비 파이프라인</h3>
+                <div class="pipeline-steps">
+                    <div class="pipeline-step start">🚀 MCP 서버 시작</div>
+                    <div class="pipeline-arrow">→</div>
+                    <div class="pipeline-step">🔧 환경변수 확인<br/>LLMS_PATH_TYPE</div>
+                    <div class="pipeline-arrow">→</div>
+                    <div class="pipeline-step">📁 LLMS.txt 로딩<br/>문서 목록 추출</div>
+                    <div class="pipeline-arrow">→</div>
+                    <div class="pipeline-step">📂 카테고리 매니저<br/>문서 분류 체계</div>
+                    <div class="pipeline-arrow">→</div>
+                    <div class="pipeline-step">📄 마크다운 로딩<br/>문서 내용 페치</div>
+                    <div class="pipeline-arrow">→</div>
+                    <div class="pipeline-step">✂️ 문서 분할 처리<br/>검색 청크 생성</div>
+                    <div class="pipeline-arrow">→</div>
+                    <div class="pipeline-step">🗂️ 검색 인덱스<br/>BM25 구축</div>
+                    <div class="pipeline-arrow">→</div>
+                    <div class="pipeline-step start">🌐 Docsify 서버 준비<br/>⚡ MCP 서버 준비</div>
+                </div>
+            </div>
+    </section>
+
+    <!-- Section 7: 백엔드 코드 생성 예시 1 -->
+    <section class="section section-demo">
+        <div class="container">
+            <h1>백엔드 코드 생성 예시 1</h1>
+            <div class="demo-container">
+                <div class="demo-workflow">
+                    <div class="demo-step">
+                        <h4>질의</h4>
+                        <p style="font-size: 0.9rem; color: #4a5568;">텍스트 질문 입력</p>
+                    </div>
+                    <div class="demo-arrow">→</div>
+                    <div class="demo-step">
+                        <h4>AI + lago MCP</h4>
+                        <p style="font-size: 0.9rem; color: #4a5568;">문서 검색 및 처리</p>
+                    </div>
+                    <div class="demo-arrow">→</div>
+                    <div class="demo-step">
+                        <h4>결과</h4>
+                        <p style="font-size: 0.9rem; color: #4a5568;">코드 생성</p>
+                    </div>
+                </div>
+
+                <div class="demo-input-area">
+                    <h4>질의 입력</h4>
+                    <div class="demo-input" onclick="copyToClipboard(this)" style="position: relative;">
+                        lago MCP로 코드 표준 문서 중 API 레이어를 확인하고, TutorApi.java를 작성해줘
+                        <div class="copy-feedback" id="copyFeedback">복사되었습니다!</div>
+                    </div>
+                </div>
+
+                <div class="demo-result-area">
+                    <h4>생성 결과</h4>
+                    <div class="demo-image-placeholder">
+                        <a href="image/backend_result1.png" target="_blank">
+                            <img src="image/backend_result1.png" alt="백엔드 코드 생성 결과">
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 8: 백엔드 코드 생성 예시 1 -->
+    <section class="section .section-demo-even">
+        <div class="container">
+            <h1>백엔드 코드 생성 예시 2</h1>
+            <div class="demo-container">
+                <div class="demo-workflow">
+                    <div class="demo-step">
+                        <h4>질의</h4>
+                        <p style="font-size: 0.9rem; color: #4a5568;">텍스트 질문 입력</p>
+                    </div>
+                    <div class="demo-arrow">→</div>
+                    <div class="demo-step">
+                        <h4>AI + lago MCP</h4>
+                        <p style="font-size: 0.9rem; color: #4a5568;">문서 검색 및 처리</p>
+                    </div>
+                    <div class="demo-arrow">→</div>
+                    <div class="demo-step">
+                        <h4>결과</h4>
+                        <p style="font-size: 0.9rem; color: #4a5568;">코드 생성</p>
+                    </div>
+                </div>
+
+                <div class="demo-input-area">
+                    <h4>질의 입력</h4>
+                    <div class="demo-input" onclick="copyToClipboard(this)" style="position: relative;">
+                        lago MCP로 코드 표준 문서 중 API 레이어를 확인하고, TutorApi.java를 작성해줘
+                        <div class="copy-feedback" id="copyFeedback">복사되었습니다!</div>
+                    </div>
+                </div>
+
+                <div class="demo-result-area">
+                    <h4>생성 결과</h4>
+                    <div class="demo-image-placeholder">
+                        <a href="image/backend_result1.png" target="_blank">
+                            <img src="image/backend_result1.png" alt="백엔드 코드 생성 결과">
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 9: 프론트엔드 코드 생성 예시 -->
+    <section class="section section-demo">
+        <div class="container">
+            <h1>프론트엔드 코드 생성 예시</h1>
+            <div class="demo-container">
+                <div class="demo-workflow">
+                    <div class="demo-step">
+                        <h4>질의</h4>
+                        <p style="font-size: 0.9rem; color: #4a5568;">텍스트 질문 입력</p>
+                    </div>
+                    <div class="demo-arrow">→</div>
+                    <div class="demo-step">
+                        <h4>AI  <br/> + lago MCP  + Figma </h4>
+                        <p style="font-size: 0.9rem; color: #4a5568;">문서 검색 및 처리, <br/> FIGMA 디자인 파일 분석</p>
+                    </div>
+                    <div class="demo-arrow">→</div>
+                    <div class="demo-step">
+                        <h4>결과</h4>
+                        <p style="font-size: 0.9rem; color: #4a5568;">코드 생성</p>
+                    </div>
+                </div>
+
+                <div class="demo-input-area">
+                    <h4>질의 입력</h4>
+                    <div class="demo-input" onclick="copyToClipboard(this)" style="position: relative;">
+                        1. 강사 관리 목록 화면을 개발해야해, 너는 프론트엔드 개발자야
+                        <br/> 2. Figma Mcp로 https://www.figma.com/design/ccQ8owyjvbod7ZdWu0Qcol/3.4.1.NLP_BO_LMS_%EA%B5%90%EC%9C%A1%EC%9A%B4%EC%98%81?node-id=5480-141671&t=qMjHE7eIJP6ALXQO-4 를 확인해
+                        <br/> 3. lago MCP로 코드 표준 문서 중 FSD 패턴을 확인하고, tutor 화면을 FSD 패턴에 맞게 코드를 작성해줘
+                        <div class="copy-feedback" id="copyFeedback">복사되었습니다!</div>
+                    </div>
+                </div>
+
+                <div class="demo-result-area">
+                    <h4>생성 결과</h4>
+                    <div class="demo-image-placeholder">
+                        <a href="image/backend_result1.png" target="_blank">
+                            <img src="image/backend_result1.png" alt="백엔드 코드 생성 결과">
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 10: next 문서 관리 시스템 상상 -->
+    <section class="section section-futures">
+        <div class="container">
+            <h1>미래에 문서관리 시스템/MCP를 상상해보면</h1>
+                <p><b>  모든 정보 저장소를 통합하여 하나의 AI 어시스턴트</b>가 조직의 모든 지식에 접근할 수 있는 시스템</p>
+            <div class="future-architecture">
+                <div class="architecture-diagram">
+                    <!-- 데이터 소스들 -->
+                    <div class="data-sources">
+                        <div class="data-source">Confluence</div>
+                        <div class="data-source">GitLab</div>
+                        <div class="data-source">Jira</div>
+                        <div class="data-source">Teams</div>
+                        <div class="data-source">Office365</div>
+                        <div class="data-source">기타 저장소</div>
+                    </div>
+
+                    <div class="architecture-arrow">↓</div>
+
+                    <!-- 어댑터 레이어 -->
+                    <div class="adapter-layer">
+                        정보 수집 어댑터 레이어
+                    </div>
+
+                    <div class="architecture-arrow">↓</div>
+
+                    <!-- 중앙 MCP -->
+                    <div class="central-mcp">
+                        <div class="central-mcp-title">중앙형 문서 관리 시스템</div>
+                        
+                        <!-- 처리 레이어 -->
+                        <div class="processing-layer">
+                            <div class="processing-component">Elasticsearch<br/>검색 엔진</div>
+                            <div class="processing-component">Bedrock<br/>AI 모델</div>
+                            <div class="processing-component">Vector DB<br/>임베딩 저장</div>
+                        </div>
+                    </div>
+
+                    <div class="architecture-arrow">↓</div>
+
+                    <!-- RAG 출력 -->
+                    <div class="rag-output">
+                        통합 RAG 시스템으로 AI 지원
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 11: 코드 생성 외 활용 방법 -->
+    <section class="section section-applications">
+        <div class="container">
+            <h1>코드 생성 외 활용 방법</h1>
+            <p>AI Agent와 MCP를 활용한 다양한 업무 자동화 및 효율성 개선 사례</p>
+            <div class="applications-gallery">
+                <div class="application-item">
+                    <div class="application-image">
+                        <div class="application-title">문서 자동 번역 및 요약</div>
+                        <!-- 이미지는 나중에 추가 -->
+                        <img src="17.png" alt="업무 프로세스 문서화">
+                    </div>
+                    <div class="application-description">
+                        <h4>다국어 문서 처리</h4>
+                        <p>기술 문서, 매뉴얼, 사양서 등을 자동으로 번역하고 핵심 내용을 요약하여 팀 간 커뮤니케이션을 원활하게 지원합니다.</p>
+                    </div>
+                </div>
+
+                <div class="application-item">
+                    <div class="application-image">
+                        <div class="application-title">코드 리뷰 자동화</div>
+                        <!-- 이미지는 나중에 추가 -->
+                        <img src="17.png" alt="업무 프로세스 문서화">
+                    </div>
+                    <div class="application-description">
+                        <h4>품질 관리 강화</h4>
+                        <p>코딩 표준 준수, 보안 취약점 검사, 성능 최적화 제안 등을 자동으로 수행하여 코드 품질을 향상시킵니다.</p>
+                    </div>
+                </div>
+
+                <div class="application-item">
+                    <div class="application-image">
+                        <div class="application-title">업무 프로세스 문서화</div>
+                        <!-- 이미지는 나중에 추가 -->
+                        <img src="17.png" alt="업무 프로세스 문서화">
+                    </div>
+                    <div class="application-description">
+                        <h4>지식 관리 체계화</h4>
+                        <p>회의록, 결정사항, 업무 절차 등을 자동으로 구조화하고 검색 가능한 형태로 문서화하여 조직 지식을 체계적으로 관리합니다.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 12: 마치며 -->
+    <section class="section section-closing">
+        <div class="container">
+            <h1>마치며</h1>
+            <p>github ceo tweet를 보고...!</p>
+            
+            <div class="closing-content">
+                <div class="closing-image-container">
+                    <div class="closing-image">
+                        <!-- 이미지는 나중에 추가 -->
+                        <img src="github_ceo.png" alt="AI 시대의 개발자">
+                    </div>
+                </div>
+
+                <div class="closing-text">
+                    <p><strong>증거는 분명합니다: AI를 받아들이거나, 아니면 이 직업을 떠나세요.</strong></p>
+                    
+                    <p>AI를 워크플로우에 깊이 통합하고 있는 22명의 개발자를 대상으로 한 최신 현장 연구에서 놀라운 경향이 드러났습니다: 초기 회의론을 극복한 개발자들은 극적으로 높은 야심, 기술적 유창함, 그리고 직업 만족도를 보여줍니다. 그들은 더 적은 코드를 작성하는 것이 아니라 오케스트레이션을 통해 더 복잡하고 시스템 레벨의 작업을 가능하게 하고 있습니다. 이는 교육자들에게도 마찬가지로 적용됩니다.</p>
+                    
+                    <p>이러한 변화는 가설이 아닙니다. 지금 일어나고 있는 현실입니다. 개발자들은 명확한 도입 단계를 거칩니다 - 회의적인 호기심에서 전략적 AI 협력자로 - 그리고 최종 단계에 도달한 개발자들은 개발자로서의 정체성이 변화했다고 말합니다. 그들의 초점은 더 이상 코드 생산이 아니라 시스템 설계, 에이전트 지시, 그리고 결과물 검증에 있습니다. <em>"제 다음 직책은 코드의 크리에이티브 디렉터가 될 수도 있습니다"</em>라고 한 개발자가 말했습니다. 이는 과장이 아니라 현실입니다.</p>
+                    
+                    <p><strong>우리가 보고 있는 것들:</strong></p>
+                    <ul>
+                        <li>AI는 향후 2-5년 내에 90%의 코드를 작성할 예정입니다.</li>
+                        <li>개발자들은 걱정하지 않습니다. 그들은 앞으로 다가올 변화에 대해 낙관적이고 현실적입니다.</li>
+                        <li>새로운 기술이 중요해졌습니다. 예: 에이전트 오케스트레이션, 반복적 협업, 그리고 비판적 검증.</li>
+                        <li><strong>시간 절약? 물론입니다. 하지만 진짜 변화는 야심입니다. 개발자들은 비용을 낮추는 것이 아니라 한계를 높이고 있습니다.</strong></li>
+                    </ul>
+                    
+                    <p>이는 교육에도 엄청난 영향을 미칩니다. 문법만 가르치는 것은 이제 구식입니다. 학생들은 이제 AI를 가이드하고, 그 작업을 비판하며, 학문을 넘나드는 사고를 배워야 합니다. 평가는 AI와의 협업을 측정해야 하며, AI로부터 격리된 상태가 아니어야 합니다.</p>
+                    
+                    <p>이는 더 이상 생산성의 문제가 아닙니다. 재창조의 문제입니다. 소프트웨어 개발자의 직업은 사라지지 않습니다. 다시 태어나고 있습니다.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 13: Q&A -->
+    <section class="section section-qna">
+        <div class="container">
+            <h1>Q&A</h1>
+        </div>
+    </section>
+
+    <script>
+        function copyToClipboard(element) {
+            const text = element.textContent.replace('복사되었습니다!', '').trim();
+            navigator.clipboard.writeText(text).then(function() {
+                const feedback = document.getElementById('copyFeedback');
+                feedback.classList.add('show');
+                setTimeout(() => {
+                    feedback.classList.remove('show');
+                }, 2000);
+            }).catch(function(err) {
+                console.error('복사 실패:', err);
+                // 구형 브라우저 대응
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                const feedback = document.getElementById('copyFeedback');
+                feedback.classList.add('show');
+                setTimeout(() => {
+                    feedback.classList.remove('show');
+                }, 2000);
+            });
+        }
+
+        function toggleAnswer(answerId) {
+            const answer = document.getElementById(answerId);
+            if (answer.style.display === 'none' || answer.style.display === '') {
+                answer.style.display = 'block';
+            } else {
+                answer.style.display = 'none';
+            }
+        }
+
+
+        // 내비게이션 아이템 클릭 시 해당 섹션으로 이동
+        const navItems = document.querySelectorAll('.nav-item');
+        const sections = document.querySelectorAll('.section');
+
+        navItems.forEach((item, index) => {
+            item.addEventListener('click', () => {
+                sections[index].scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // 스크롤 시 현재 섹션 표시 및 내비게이션 아이템 업데이트
+        window.addEventListener('scroll', function() {
+            const scrollPosition = window.pageYOffset;
+            let currentSection = 0;
+
+            sections.forEach((section, index) => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.offsetHeight;
+                
+                if (scrollPosition >= sectionTop - window.innerHeight / 2 && 
+                    scrollPosition < sectionTop + sectionHeight - window.innerHeight / 2) {
+                    section.style.opacity = '1';
+                    section.style.transform = 'translateY(0)';
+                    currentSection = index;
+                }
+            });
+
+            // 활성 아이템 업데이트
+            navItems.forEach((item, index) => {
+                if (index === currentSection) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        });
+
+        // 초기 스타일 설정
+        document.querySelectorAll('.section').forEach(section => {
+            section.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        });
+    </script>
+</body>
+</html>

@@ -83,12 +83,12 @@
             background-color: #f8f9fa;
         }
 
-        .section-demo-even {
-            background-color: #ffffff;
-        }
-
         .section-demo {
             background-color: #f8f9fa;
+        }
+
+        .section-demo-even {
+            background-color: #ffffff;
         }
 
         .section-futures {
@@ -647,58 +647,6 @@
             border-color: #2f855a;
         }
 
-        /* 요청 처리 파이프라인 스타일 */
-        .pipeline-request-flow {
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-            align-items: center;
-        }
-
-        .request-start {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .pipeline-arrow.vertical {
-            font-size: 1.8rem;
-            color: #64748b;
-            font-weight: bold;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .request-branches {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 2rem;
-            width: 100%;
-            max-width: 1000px;
-        }
-
-        .request-branch {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1rem;
-            padding: 1rem;
-            background-color: #f8fafc;
-            border: 1px solid #e2e8f0;
-        }
-
-        .request-branch .pipeline-step {
-            width: 234px;
-            min-height: 104px;
-        }
-
-        .request-branch .pipeline-arrow {
-            font-size: 1.5rem;
-        }
 
         /* 채널별 화살표 스타일 */
         .pipeline-connector {
@@ -790,12 +738,6 @@
             background: linear-gradient(90deg, #1e293b 0%, #0f172a 100%);
         }
 
-        .channel-icon {
-            font-size: 3.5rem;
-            margin-bottom: 1.2rem;
-            filter: grayscale(20%);
-        }
-
         .channel-title {
             font-size: 1.5rem;
             font-weight: 700;
@@ -811,55 +753,6 @@
             font-weight: 500;
         }
 
-        /* 사용자 요청 섹션 */
-        .user-request-section {
-            margin-top: 2rem;
-            text-align: center;
-        }
-
-        .flow-arrows {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 2.5rem 0;
-            gap: 3rem;
-        }
-
-        .down-arrow {
-            width: 2px;
-            height: 60px;
-            background: linear-gradient(180deg, #6b7280 0%, #313e54 100%);
-            position: relative;
-            margin: 0 2rem;
-        }
-        .down-arrow::after {
-            content: '';
-            position: absolute;
-            bottom: -6px;
-            left: -4px;
-            width: 0;
-            height: 0;
-            border-left: 5px solid transparent;
-            border-right: 5px solid transparent;
-            border-top: 10px solid #374151;
-        }
-        .down-arrow::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -2px;
-            width: 6px;
-            height: 6px;
-            background: #6b7280;
-            border-radius: 50%;
-        }
-
-
-        .user-request-box {
-            display: flex;
-            justify-content: center;
-            margin-top: 1rem;
-        }
 
         /* 반응형 - 새로운 채널 구조 */
         @media (max-width: 768px) {
@@ -872,23 +765,7 @@
                 padding: 1.5rem;
             }
 
-            .channel-icon {
-                font-size: 2.5rem;
-            }
 
-            .split-arrow-down {
-                border-left: 15px solid transparent;
-                border-right: 15px solid transparent;
-                border-top: 20px solid #1a365d;
-            }
-
-            .split-arrow-down::after {
-                top: -18px;
-                left: -12px;
-                border-left: 12px solid transparent;
-                border-right: 12px solid transparent;
-                border-top: 16px solid #ffffff;
-            }
 
             .pipeline-step {
                 height: 91px;
@@ -1267,14 +1144,14 @@
             <span class="nav-dot"></span>
             <span class="nav-text">Q&A</span>
         </div>
-    </nav>
+    </nav>  
 
     <!-- Section 1: 들어가며 -->
     <section class="section section-intro">
         <div class="container">
             <h1>들어가며</h1>
             <p>발표에서는 프로젝트/개발 생산성을 높이기 위해 진행했던 경험을 소개합니다.</p>
-            <p>시도했던 것과 지금 하고 있는 것, 앞으로 기대하는 것을 담아서 발표하겠습니다.</p>
+            <p>시도했던 것과 하고 있는 것, 앞으로 기대하는 것을 담았습니다.</p>
         </div>
     </section>
 
@@ -1554,7 +1431,7 @@
     </section>
 
     <!-- Section 8: 백엔드 코드 생성 예시 1 -->
-    <section class="section .section-demo-even">
+    <section class="section section-demo-even">
         <div class="container">
             <h1>백엔드 코드 생성 예시 2</h1>
             <div class="demo-container">
